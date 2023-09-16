@@ -10,7 +10,3 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ['id', 'first_name', 'last_name', 'email', 'password']
         extra_kwargs = {'password': {'write_only': True}}
-
-    def create(self, validated_data):
-        validated_data.pop('confirm_password', None)
-        return get_user_model().objects.create_user(**validated_data)
