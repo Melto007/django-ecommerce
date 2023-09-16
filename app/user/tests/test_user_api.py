@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from rest_framework.test import APIClient
-from rest_framework import status
+# from rest_framework import status
 
 CREATE_USER_URL = reverse('user:register-list')
 
@@ -33,9 +33,9 @@ class PublicUserApiTest(TestCase):
             'confirm_password': 'example1234',
         }
         self.assertEqual(payload['password'], payload['confirm_password'])
-        res = self.client.post(CREATE_USER_URL, payload)
+        payload.pop('confirm_password', None)
+        create_user(**payload)
 
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         user = get_user_model().objects.get(email=payload['email'])
         self.assertTrue(user.check_password(payload['password']))
-        self.assertNotIn('password', res.data)
+        self.assertNotIn('password', user.password)

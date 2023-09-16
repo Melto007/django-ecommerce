@@ -20,6 +20,7 @@ services:
       - DB_NAME=ecommerce_db
       - DB_USER=devuser
       - DB_PASSWORD=changeme
+      - JWT_SECRET=-0jh#r)(xdhk!!gek-ack)eccvqe9lr*$bej0&*&s2*#_x4q8l
     depends_on:
       - db
 
