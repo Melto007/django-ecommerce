@@ -38,3 +38,17 @@ class ModelTests(TestCase):
                 'sample123'
             )
             self.assertEqual(user.email, expected)
+
+    def test_superuser(self):
+        """Test super user"""
+
+        email = 'user@example.com'
+        password = 'examplepassword'
+
+        user = get_user_model().objects.create_superuser(
+            email=email,
+            password=password
+        )
+
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
