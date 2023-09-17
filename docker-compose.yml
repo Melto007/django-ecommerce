@@ -21,6 +21,8 @@ services:
       - DB_USER=devuser
       - DB_PASSWORD=changeme
       - JWT_SECRET=-0jh#r)(xdhk!!gek-ack)eccvqe9lr*$bej0&*&s2*#_x4q8l
+      - JWT_REFRESH_SECRET=&x=dp4m%@^md%0c3kky_u7=@zg8b)x=68ag%_yp$6ml)rq1h2e
+      - COOKIES_KEY=^b9dvd0exjq%l3vg+^+&=$asqu46i-+r*a@fdzv269yjw3rgdk
     depends_on:
       - db
 

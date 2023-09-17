@@ -16,3 +16,17 @@ def create_access_token(id):
         secret,
         algorithm="HS256",
     )
+
+
+def create_refresh_token(id):
+    """create refresh token for user"""
+    secret = os.environ.get('JWT_REFRESH_SECRET')
+    return jwt.encode(
+        {
+            'user': id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7),
+            'iat': datetime.datetime.utcnow()
+        },
+        secret,
+        algorithm="HS256",
+    )
