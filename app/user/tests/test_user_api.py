@@ -10,7 +10,6 @@ import datetime
 
 
 CREATE_USER_URL = reverse('user:register-list')
-CREATE_ACCOUNT_URL = reverse('user:account-list')
 
 
 def create_user(**params):
@@ -82,12 +81,6 @@ class PrivateUserAPITest(TestCase):
         )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
-
-    def test_account_not_allowed(self):
-        """test account is not allowed"""
-        self.client.get(CREATE_ACCOUNT_URL, {})
-
-        self.assertEqual('Unauthenticated', 'Unauthenticated')
 
     def test_user_token_unauthorized_refresh(self):
         """test user token refresh"""

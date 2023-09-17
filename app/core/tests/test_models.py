@@ -76,34 +76,3 @@ class ModelTests(TestCase):
             expired_at=datetime.datetime.utcnow()
         )
         self.assertEquals(res.token, token)
-
-    def test_accout_create_success(self):
-        """create account success"""
-
-        email = 'user@example.com'
-        password = 'examplepassword'
-        get_user_model().objects.create_superuser(
-            email=email,
-            password=password
-        )
-
-        res = get_user_model().objects.get(
-            email=email
-        )
-
-        payload = {
-            'phonenumber': 7483748832,
-            'billing_address': 'some where',
-            'shipping_address': 'temp address',
-            'location': 'some where',
-            'account_verify': False,
-            'created_at': '2023-03-23',
-            'status': True
-        }
-
-        res = models.Account.objects.create(
-            user=res,
-            **payload
-        )
-
-        self.assertEqual(res.phonenumber, payload['phonenumber'])
