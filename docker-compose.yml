@@ -21,7 +21,7 @@ services:
       - DB_USER=devuser
       - DB_PASSWORD=changeme
       - ACCESS_SECRET=-0jh#r)(xdhk!!gek-ack)eccvqe9lr*$bej0&*&s2*#_x4q8l
-      - REFRESH_TOKEN=&x=dp4m%@^md%0c3kky_u7=@zg8b)x=68ag%_yp$6ml)rq1h2e
+      - REFRESH_TOKEN=ngqv_+tjxw2_n_8=ug2l1y3d$5992sqsxae9z*2a=0=3pf7i8f
 #      - COOKIES_KEY=^b9dvd0exjq%l3vg+^+&=$asqu46i-+r*a@fdzv269yjw3rgdk
     depends_on:
       - db
