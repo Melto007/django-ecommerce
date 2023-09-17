@@ -2,6 +2,26 @@
 import jwt
 import datetime
 import os
+from rest_framework.authentication import (
+    BaseAuthentication,
+    get_authorization_header
+)
+from rest_framework import exceptions
+from django.contrib.auth import get_user_model
+
+
+class JWTAuthentication(BaseAuthentication):
+    """authentication class for user"""
+    def authenticate(self, request):
+        """authentication check for user"""
+        auth = get_authorization_header(request).split()
+
+        if auth and len(auth) == 2:
+            token = auth[1].decode('utf-8')
+            user_id = decode_access_token(token)
+            user = get_user_model().objects.get(pk=user_id)
+            return {user, None}
+        raise exceptions.AuthenticationFailed("Unauthorized")
 
 
 def create_access_token(id):
@@ -16,6 +36,20 @@ def create_access_token(id):
         secret,
         algorithm="HS256",
     )
+
+
+def decode_access_token(token):
+    """decode access token"""
+    try:
+        payload = jwt.decode(
+            token,
+            os.environ.get('ACCESS_SECRET'),
+            algorithms="HS256",
+        )
+        return payload['user']
+    except Exception as e:
+        print(e)
+        raise exceptions.AuthenticationFailed('Unauthenticated')
 
 
 def create_refresh_token(id):

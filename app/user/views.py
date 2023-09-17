@@ -7,14 +7,17 @@ from rest_framework import (
 )
 from rest_framework.response import Response
 from .serializer import (
-    UserSerializer
+    UserSerializer,
+    AccountSerializer
 )
 from django.contrib.auth import get_user_model
 from config import authentication
 from core.models import (
-    UserToken
+    UserToken,
+    Account
 )
 import datetime
+from config.authentication import JWTAuthentication
 
 
 class UserRegisterView(
@@ -56,3 +59,16 @@ class UserRegisterView(
         }
 
         return Response(response, status=status.HTTP_201_CREATED)
+
+
+class AccountMixinView(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    serializer_class = AccountSerializer
+    queryset = Account.objects.all()
+    authentication_classes = [JWTAuthentication]
+
+    def list(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)

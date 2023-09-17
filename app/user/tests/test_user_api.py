@@ -11,6 +11,7 @@ import datetime
 # from rest_framework import status
 
 CREATE_USER_URL = reverse('user:register-list')
+CREATE_ACCOUNT_URL = reverse('user:account-list')
 
 
 def create_user(**params):
@@ -67,3 +68,24 @@ class PublicUserApiTest(TestCase):
         get_token = models.UserToken.objects.get(user=user.id)
 
         self.assertEqual(user.id, get_token.user)
+
+
+class PrivateUserAPITest(TestCase):
+    """Test for private user api"""
+
+    def setup(self):
+        self.user = create_user(
+            first_name='Test name',
+            last_name='Test_name',
+            email='admin@example.com',
+            password='example1234',
+            confirm_password='example1234'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_account_not_allowed(self):
+        """test account is not allowed"""
+        self.client.get(CREATE_ACCOUNT_URL, {})
+
+        self.assertEqual('Unauthenticated', 'Unauthenticated')

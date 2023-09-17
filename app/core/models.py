@@ -66,6 +66,9 @@ class UserToken(models.Model):
     expired_at = models.DateTimeField(default=settings.TOKEN_EXPIES)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.token
+
 
 class Account(models.Model):
     user = models.ForeignKey(
@@ -77,8 +80,7 @@ class Account(models.Model):
     )
     phonenumber = models.CharField(
         validators=[phoneNumberRegex],
-        max_length=16,
-        unique=True
+        max_length=16
     )
     billing_address = models.CharField(max_length=255)
     shipping_address = models.CharField(max_length=255)
@@ -86,3 +88,6 @@ class Account(models.Model):
     account_verify = models.BooleanField(default=False)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user

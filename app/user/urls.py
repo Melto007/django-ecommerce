@@ -9,6 +9,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 
 router.register('register', views.UserRegisterView, basename='register')
+router.register('account', views.AccountMixinView, basename='account')
 
 app_name = 'user'
 
