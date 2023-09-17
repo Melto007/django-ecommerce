@@ -6,7 +6,7 @@ import os
 
 def create_access_token(id):
     """create token for user login"""
-    secret = os.environ.get('JWT_SECRET')
+    secret = os.environ.get('ACCESS_SECRET')
     return jwt.encode(
         {
             'user': id,
@@ -20,7 +20,7 @@ def create_access_token(id):
 
 def create_refresh_token(id):
     """create refresh token for user"""
-    secret = os.environ.get('JWT_REFRESH_SECRET')
+    secret = os.environ.get('REFRESH_TOKEN')
     return jwt.encode(
         {
             'user': id,
