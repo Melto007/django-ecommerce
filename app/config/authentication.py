@@ -19,6 +19,7 @@ class JWTAuthentication(BaseAuthentication):
         if auth and len(auth) == 2:
             token = auth[1].decode('utf-8')
             user_id = decode_access_token(token)
+            print(user_id)
             user = get_user_model().objects.get(pk=user_id)
             return {user, None}
         raise exceptions.AuthenticationFailed("Unauthorized")
@@ -63,3 +64,17 @@ def create_refresh_token(id):
         secret,
         algorithm="HS256",
     )
+
+
+def decode_refresh_token(token):
+    """decode refresh token for user"""
+    secret = os.environ.get('REFRESH_TOKEN')
+    try:
+        payload = jwt.decode(
+            token,
+            secret,
+            algorithms="HS256",
+        )
+        return payload['user']
+    except Exception as e: # noqa
+        raise exceptions.AuthenticationFailed('Unauthenticated')

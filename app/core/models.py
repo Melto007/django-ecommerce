@@ -67,27 +67,4 @@ class UserToken(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.token
-
-
-class Account(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
-    )
-    phoneNumberRegex = RegexValidator(
-        regex=r"^\+?1?\d{8,15}$"
-    )
-    phonenumber = models.CharField(
-        validators=[phoneNumberRegex],
-        max_length=16
-    )
-    billing_address = models.CharField(max_length=255)
-    shipping_address = models.CharField(max_length=255)
-    location = models.CharField(max_length=255)
-    account_verify = models.BooleanField(default=False)
-    status = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.user
+        return str(self.token)

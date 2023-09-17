@@ -4,11 +4,10 @@ Test for user api
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-
 from rest_framework.test import APIClient
 from core import models
 import datetime
-# from rest_framework import status
+
 
 CREATE_USER_URL = reverse('user:register-list')
 CREATE_ACCOUNT_URL = reverse('user:account-list')
@@ -89,3 +88,51 @@ class PrivateUserAPITest(TestCase):
         self.client.get(CREATE_ACCOUNT_URL, {})
 
         self.assertEqual('Unauthenticated', 'Unauthenticated')
+
+    def test_user_token_unauthorized_refresh(self):
+        """test user token refresh"""
+        payload = {
+            'first_name': 'Test name',
+            'last_name': 'Test_name',
+            'email': 'admin@example.com',
+            'password': 'example1234',
+        }
+
+        user = create_user(**payload)
+        user_id = user.id
+        token = 'user_access_token'
+        expired_at = '2023-03-2'
+
+        user_token = models.UserToken.objects.filter(
+            user=user_id,
+            token=token,
+            expired_at__gt=expired_at
+        ).exists()
+
+        self.assertFalse(user_token)
+
+    def test_user_token_created_success(self):
+        """test user token refresh"""
+        payload = {
+            'first_name': 'Test name',
+            'last_name': 'Test_name',
+            'email': 'admin@example.com',
+            'password': 'example1234',
+        }
+
+        user = create_user(**payload)
+        user_id = user.id
+        token = 'user_access_token'
+        expired_at = '2023-03-2'
+
+        models.UserToken.objects.create(
+            user=user_id,
+            token=token,
+            expired_at=expired_at
+        )
+
+        res = models.UserToken.objects.get(
+            user=user_id
+        )
+
+        self.assertEqual(res.user, user_id)

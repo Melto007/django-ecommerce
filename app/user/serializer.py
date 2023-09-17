@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from core.models import (
-    Account
+    UserToken
 )
 
 
@@ -14,14 +14,19 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'email', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
+    def create(self, validated_data):
+        return get_user_model().objects.create_user(**validated_data)
 
-class AccountSerializer(serializers.ModelSerializer):
-    """Serializer for account"""
+
+class UserTokenSerializer(serializers.ModelSerializer):
+    """Serializer for token"""
 
     class Meta:
-        model = Account
-        fields = [
-            'id', 'phonenumber',
-            'billing_address', 'shipping_address', 'location',
-            'account_verify', 'status'
-        ]
+        model = UserToken
+        fields = ['id', 'user', 'token', 'expired_at']
+
+
+class RefreshTokenSerializer(UserTokenSerializer):
+    class Meta(UserTokenSerializer.Meta):
+        model = UserTokenSerializer.Meta.model
+        fields = UserTokenSerializer.Meta.fields
