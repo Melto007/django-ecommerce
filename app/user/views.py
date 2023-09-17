@@ -13,9 +13,7 @@ from .serializer import (
 )
 from django.contrib.auth import get_user_model
 from config.authentication import (
-    JWTAuthentication,
     create_access_token,
-    decode_access_token,
     create_refresh_token,
     decode_refresh_token
 )
