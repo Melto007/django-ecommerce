@@ -47,7 +47,7 @@ def decode_access_token(token):
             algorithms="HS256",
         )
         return payload['user']
-    except Exception as e: #noqa
+    except Exception as e: # noqa
         raise exceptions.AuthenticationFailed('Unauthenticated')
 
 
