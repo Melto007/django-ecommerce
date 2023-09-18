@@ -9,7 +9,8 @@ from rest_framework.response import Response
 from .serializer import (
     UserSerializer,
     RefreshTokenSerializer,
-    UserTokenSerializer
+    UserTokenSerializer,
+    TwoFactorAuthSerializer
 )
 from django.contrib.auth import get_user_model
 from config.authentication import (
@@ -17,9 +18,11 @@ from config.authentication import (
     decode_refresh_token
 )
 from core.models import (
-    UserToken
+    UserToken,
+    TwoFactorAuth
 )
 import datetime
+from app.celery_tasks.cl_email import sendcode
 
 
 class UserRegisterView(
@@ -91,6 +94,8 @@ class LoginMixinView(
                 'Invalid Credential - password'
             )
 
+        sendcode.apply_async(args=[user.id, user.email])
+
         response = {
             'message': 'login code send to your mail'
         }
@@ -125,6 +130,18 @@ class LogoutMixinView(
             return Response(response, status=status.HTTP_200_OK)
         except Exception as e: # noqa
             raise exceptions.APIException('Unauthenticated')
+
+
+class TwoFactorMixinView(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+):
+    serializer_class = TwoFactorAuthSerializer
+    queryset = TwoFactorAuth.objects.all()
+
+    def create(self, request):
+        """verify user for login"""
+        pass
 
 
 class RefreshTokenMixin(

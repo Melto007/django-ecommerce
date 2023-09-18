@@ -58,7 +58,7 @@ services:
     volumes:
       - ./app:/app
     command: >
-      sh -c "celery --app=app worker -l INFO"
+      sh -c "celery --app=app worker -l INFO -Q tasks"
     environment:
       - DB_HOST=db
       - DB_NAME=ecommerce_db
@@ -66,6 +66,10 @@ services:
       - DB_PASSWORD=changeme
       - ACCESS_SECRET="some_secret_message"
       - REFRESH_TOKEN="some_access_message"
+      - EMAIL_HOST='sandbox.smtp.mailtrap.io'
+      - EMAIL_USER='d1bb3b3ea39a70'
+      - EMAIL_PASSWORD='e5cec0d1c2db45'
+      - EMAIL_PORT='2525'
     depends_on:
       - redis
       - rabbitmq
