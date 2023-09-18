@@ -12,7 +12,8 @@ services:
     volumes:
       - ./app:/app
     command: >
-      sh -c "python manage.py wait_for_db &&
+      sh -c "python manage.py wait_for_redis &&
+             python manage.py wait_for_db &&
              python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     environment:
@@ -23,6 +24,8 @@ services:
       - ACCESS_SECRET="some_secret_message"
       - REFRESH_TOKEN="some_access_message"
     depends_on:
+      - redis
+      - rabbitmq
       - db
 
   db:
@@ -34,6 +37,39 @@ services:
       - POSTGRES_DB=ecommerce_db
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=changeme
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  redis:
+    container_name: redis
+    image: redis:7.0.11-alpine
+    ports:
+      - "6379:6379"
+
+  celery:
+    container_name: celery
+    build:
+      context: .
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "celery --app=app worker -l INFO"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=ecommerce_db
+      - DB_USER=devuser
+      - DB_PASSWORD=changeme
+      - ACCESS_SECRET="some_secret_message"
+      - REFRESH_TOKEN="some_access_message"
+    depends_on:
+      - redis
+      - rabbitmq
+      - db
 
 volumes:
   dev-db-data:

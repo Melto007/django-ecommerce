@@ -9,6 +9,7 @@ from django.contrib.auth.models import (
 )
 from django.conf import settings
 from django.core.validators import RegexValidator # noqa
+import datetime
 
 
 class UserManager(BaseUserManager):
@@ -58,6 +59,18 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+
+class TwoFactorAuth(models.Model):
+    """model for two factor auth"""
+    user = models.IntegerField()
+    token = models.IntegerField()
+    expired_at = models.DateTimeField(
+        default=datetime.datetime.utcnow() + datetime.timedelta(seconds=60)
+    )
+
+    def __str__(self):
+        return str(self.token)
 
 
 class UserToken(models.Model):
