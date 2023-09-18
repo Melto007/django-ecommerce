@@ -76,15 +76,3 @@ class ModelTests(TestCase):
             expired_at=datetime.datetime.utcnow()
         )
         self.assertEquals(res.token, token)
-
-    def test_two_factor_auth_create(self):
-        """test two factor auth is created or not"""
-        payload = {
-            'user': 1,
-            'token': 345432,
-            'expired_at': '2021-03-22'
-        }
-
-        two_fact = models.TwoFactorAuth.objects.create(**payload)
-        res = models.TwoFactorAuth.objects.get(user=two_fact.id)
-        self.assertEqual(res.user, payload['user'])

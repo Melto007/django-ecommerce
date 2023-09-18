@@ -3,9 +3,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from core.models import (
-    UserToken,
-    TwoFactorAuth,
-    TwoFactorAuth
+    UserToken
 )
 
 
@@ -28,24 +26,7 @@ class UserTokenSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'token', 'expired_at']
 
 
-class TwoFactorSerializer(serializers.ModelSerializer):
-    """serializer for two factor authentication"""
-
-    class Meta:
-        model = TwoFactorAuth
-        fields = ['id', 'user', 'token', 'expired_at']
-        read_only_fields = ['id']
-
-
 class RefreshTokenSerializer(UserTokenSerializer):
     class Meta(UserTokenSerializer.Meta):
         model = UserTokenSerializer.Meta.model
         fields = UserTokenSerializer.Meta.fields
-
-
-class TwoFactorAuthSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = TwoFactorAuth
-        fields = ['id', 'user', 'token', 'expired_at']
-

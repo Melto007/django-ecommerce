@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'celery',
 
     'core',
     'user',
@@ -137,11 +136,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.User'
 
 TOKEN_EXPIES = datetime.datetime.now() + datetime.timedelta(days=7)
-
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "amqp://guest:guest@rabbitmq:5672/")
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://redis:6379/0")
-
-EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
-EMAIL_HOST_USER = 'd1bb3b3ea39a70'
-EMAIL_HOST_PASSWORD = 'e5cec0d1c2db45'
-EMAIL_PORT = '2525'

@@ -9,20 +9,18 @@ from rest_framework.response import Response
 from .serializer import (
     UserSerializer,
     RefreshTokenSerializer,
-    UserTokenSerializer,
-    TwoFactorAuthSerializer
+    UserTokenSerializer
 )
 from django.contrib.auth import get_user_model
 from config.authentication import (
     create_access_token,
+    create_refresh_token,
     decode_refresh_token
 )
 from core.models import (
-    UserToken,
-    TwoFactorAuth
+    UserToken
 )
 import datetime
-from app.celery_tasks.cl_email import sendcode
 
 
 class UserRegisterView(
@@ -33,25 +31,34 @@ class UserRegisterView(
 
     def create(self, request):
         data = request.data
-
-        email = data.get('email', None)
-        password = data.get('password', None)
-        confirm_password = data.get(
-            'confirm_password', None
-        )
+        email = self.request.data['email']
+        password = self.request.data['password']
+        confirm_password = self.request.data['confirm_password']
 
         if email[-4:] != 'com' and email[-9:-4] != 'gmail':
             raise exceptions.APIException("Invalid email")
 
         if password != confirm_password:
             raise exceptions.APIException('Password is not match')
-
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
+        token = create_access_token(serializer.data['id'])
+        refresh_token = create_refresh_token(
+            serializer.data['id']
+        )
+
+        UserToken.objects.create(
+            user=serializer.data['id'],
+            token=refresh_token,
+            expired_at=datetime.datetime.now() + datetime.timedelta(days=7)
+        )
+
+        request.session['refresh_token'] = refresh_token
+
         response = {
-            'message': 'User registered',
+            'token': token,
         }
 
         return Response(response, status=status.HTTP_201_CREATED)
@@ -94,10 +101,19 @@ class LoginMixinView(
                 'Invalid Credential - password'
             )
 
-        sendcode.apply_async(args=[user.id, user.email])
+        token = create_access_token(user.id)
+        refresh_token = create_refresh_token(user.id)
+
+        UserToken.objects.create(
+            user=user.id,
+            token=refresh_token,
+            expired_at=datetime.datetime.now() + datetime.timedelta(days=7)
+        )
+
+        request.session['refresh_token'] = refresh_token
 
         response = {
-            'message': 'login code send to your mail'
+            'token': token
         }
 
         return Response(response, status=status.HTTP_200_OK)
@@ -130,18 +146,6 @@ class LogoutMixinView(
             return Response(response, status=status.HTTP_200_OK)
         except Exception as e: # noqa
             raise exceptions.APIException('Unauthenticated')
-
-
-class TwoFactorMixinView(
-    mixins.CreateModelMixin,
-    viewsets.GenericViewSet
-):
-    serializer_class = TwoFactorAuthSerializer
-    queryset = TwoFactorAuth.objects.all()
-
-    def create(self, request):
-        """verify user for login"""
-        pass
 
 
 class RefreshTokenMixin(
