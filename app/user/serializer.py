@@ -4,7 +4,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from core.models import (
     UserToken,
-    TwoFactorAuthentication
+    TwoFactorAuthentication,
+    Account
 )
 
 
@@ -37,3 +38,15 @@ class TwoFactorAuthSerializer(serializers.ModelSerializer):
     class Meta:
         model = TwoFactorAuthentication
         fields = ['id', 'user', 'two_factor_auth']
+
+
+class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = [
+            'id', 'user', 'phonenumber', 'billing_address',
+            'shipping_address', 'location',
+        ]
+
+    def create(self, validated_data):
+        return Account.objects.create(**validated_data)

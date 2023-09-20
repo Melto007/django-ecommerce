@@ -17,6 +17,7 @@ router.register(
     views.TwoFactorAuthMixinView,
     basename='two-factor-auth'
 )
+router.register('account', views.AccountMixinView, basename='account')
 
 app_name = 'user'
 

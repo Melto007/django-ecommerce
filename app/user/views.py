@@ -10,7 +10,8 @@ from .serializer import (
     UserSerializer,
     RefreshTokenSerializer,
     UserTokenSerializer,
-    TwoFactorAuthSerializer
+    TwoFactorAuthSerializer,
+    AccountSerializer
 )
 from django.contrib.auth import get_user_model
 from config.authentication import (
@@ -20,11 +21,13 @@ from config.authentication import (
 )
 from core.models import (
     UserToken,
-    TwoFactorAuthentication
+    TwoFactorAuthentication,
+    Account
 )
 import datetime
 import pyotp
 from .tasks import mail_sharedTask
+from config import authentication
 
 
 class UserRegisterView(
@@ -146,8 +149,6 @@ class TwoFactorAuthMixinView(
                 'Invalid credential - secret'
             )
 
-        del request.session['id']
-
         user = check_code.user
 
         token = create_access_token(user)
@@ -187,6 +188,7 @@ class LogoutMixinView(
             ).delete()
 
             del request.session['refresh_token']
+            del request.session['id']
 
             response = {
                 'message': 'Logout Successfully'
@@ -231,3 +233,18 @@ class RefreshTokenMixin(
             'token': token
         }
         return Response(response, status=status.HTTP_201_CREATED)
+
+
+class AccountMixinView(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    serializer_class = AccountSerializer
+    queryset = Account.objects.all()
+    authentication_classes = [authentication.JWTAuthentication]
+
+    def get_queryset(self):
+        user = self.request.session.get('id', None)
+        if user:
+            return self.queryset.filter(user=user)
