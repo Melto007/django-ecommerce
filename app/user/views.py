@@ -9,7 +9,8 @@ from rest_framework.response import Response
 from .serializer import (
     UserSerializer,
     RefreshTokenSerializer,
-    UserTokenSerializer
+    UserTokenSerializer,
+    TwoFactorAuthSerializer
 )
 from django.contrib.auth import get_user_model
 from config.authentication import (
@@ -18,9 +19,12 @@ from config.authentication import (
     decode_refresh_token
 )
 from core.models import (
-    UserToken
+    UserToken,
+    TwoFactorAuthentication
 )
 import datetime
+import pyotp
+from .tasks import mail_sharedTask
 
 
 class UserRegisterView(
@@ -44,21 +48,8 @@ class UserRegisterView(
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        token = create_access_token(serializer.data['id'])
-        refresh_token = create_refresh_token(
-            serializer.data['id']
-        )
-
-        UserToken.objects.create(
-            user=serializer.data['id'],
-            token=refresh_token,
-            expired_at=datetime.datetime.now() + datetime.timedelta(days=7)
-        )
-
-        request.session['refresh_token'] = refresh_token
-
         response = {
-            'token': token,
+            'message': "Registered Successfully",
         }
 
         return Response(response, status=status.HTTP_201_CREATED)
@@ -101,11 +92,69 @@ class LoginMixinView(
                 'Invalid Credential - password'
             )
 
-        token = create_access_token(user.id)
-        refresh_token = create_refresh_token(user.id)
+        user_id = user.id
+        email = user.email
+
+        mail_sharedTask.apply_async(args=[user_id, email], queue='celery')
+
+        request.session['id'] = user_id
+
+        response = {
+            'message': 'code is send to mail'
+        }
+
+        return Response(response, status=status.HTTP_201_CREATED)
+
+
+class TwoFactorAuthMixinView(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+):
+    serializer_class = TwoFactorAuthSerializer
+    queryset = TwoFactorAuthentication.objects.all()
+
+    def create(self, request):
+        user_id = request.session.get('id', None)
+        data = self.request.data
+        code = data.get('code', None)
+
+        if code is None:
+            raise exceptions.APIException(
+                'Authentication Code is required - code'
+            )
+
+        if user_id is None:
+            raise exceptions.AuthenticationFailed(
+                'Invalid credential - user id'
+            )
+
+        check_code = self.queryset.filter(
+            user=user_id,
+            expired_at__gt=datetime.datetime.now(tz=datetime.timezone.utc)
+        ).first()
+
+        if not check_code:
+            raise exceptions.AuthenticationFailed(
+                'Invalid credentical - check code'
+            )
+
+        secret = check_code.two_factor_auth
+        totp = pyotp.TOTP(secret, interval=60)
+
+        if not totp.verify(code):
+            raise exceptions.AuthenticationFailed(
+                'Invalid credential - secret'
+            )
+
+        del request.session['id']
+
+        user = check_code.user
+
+        token = create_access_token(user)
+        refresh_token = create_refresh_token(user)
 
         UserToken.objects.create(
-            user=user.id,
+            user=user,
             token=refresh_token,
             expired_at=datetime.datetime.now() + datetime.timedelta(days=7)
         )

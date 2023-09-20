@@ -13,6 +13,7 @@ services:
       - ./app:/app
     command: >
       sh -c "python manage.py wait_for_db &&
+             python manage.py wait_for_redis &&
              python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     environment:
@@ -24,6 +25,7 @@ services:
       - REFRESH_TOKEN="some_access_message"
     depends_on:
       - db
+      - redis
 
   db:
     container_name: postgres-database
@@ -34,6 +36,29 @@ services:
       - POSTGRES_DB=ecommerce_db
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=changeme
+
+  redis:
+    container_name: redis
+    image: redis:7.0.11-alpine
+
+  celery:
+    container_name: celery
+    build:
+      context: .
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "celery --app=app worker -l INFO -Q celery,celery:1,celery:2,celery:3"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=ecommerce_db
+      - DB_USER=devuser
+      - DB_PASSWORD=changeme
+      - ACCESS_SECRET="some_secret_message"
+      - REFRESH_TOKEN="some_access_message"
+    depends_on:
+      - db
+      - redis
 
 volumes:
   dev-db-data:

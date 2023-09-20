@@ -1,6 +1,7 @@
 """
 Models
 """
+import datetime
 
 from django.db import models
 from django.contrib.auth.models import (
@@ -58,6 +59,17 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+
+class TwoFactorAuthentication(models.Model):
+    user = models.IntegerField()
+    two_factor_auth = models.CharField(max_length=255, default='')
+    expired_at = models.DateTimeField(
+        default=datetime.datetime.utcnow() + datetime.timedelta(seconds=60)
+    )
+
+    def __str__(self):
+        return str(self.two_factor_auth)
 
 
 class UserToken(models.Model):

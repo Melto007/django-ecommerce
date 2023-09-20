@@ -12,6 +12,11 @@ router.register('register', views.UserRegisterView, basename='register')
 router.register('refresh', views.RefreshTokenMixin, basename='refresh')
 router.register('logout', views.LogoutMixinView, basename='logout')
 router.register('login', views.LoginMixinView, basename='login')
+router.register(
+    'two-factor-auth',
+    views.TwoFactorAuthMixinView,
+    basename='two-factor-auth'
+)
 
 app_name = 'user'
 

@@ -2,3 +2,6 @@ Django>=3.2.4,<3.3
 djangorestframework>=3.12.4,<3.13
 psycopg2>=2.8.6,<2.9
 PyJWT>=2.7.0,<2.8.0
+pyotp==2.9.0
+celery==5.3
+redis==4.5
