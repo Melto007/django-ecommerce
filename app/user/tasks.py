@@ -20,7 +20,7 @@ def mail_sharedTask(user_id, email):
         ).send()
 
         if result:
-            time = datetime.datetime.utcnow() + datetime.timedelta(seconds=60)
+            time = datetime.datetime.utcnow() + datetime.timedelta(seconds=120)
             obj = {
                 'user': user_id,
                 'two_factor_auth': secret,

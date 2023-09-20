@@ -65,7 +65,7 @@ class TwoFactorAuthentication(models.Model):
     user = models.IntegerField()
     two_factor_auth = models.CharField(max_length=255, default='')
     expired_at = models.DateTimeField(
-        default=datetime.datetime.utcnow() + datetime.timedelta(seconds=60)
+        default=datetime.datetime.utcnow() + datetime.timedelta(seconds=120)
     )
 
     def __str__(self):
@@ -80,3 +80,21 @@ class UserToken(models.Model):
 
     def __str__(self):
         return str(self.token)
+
+
+class Account(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    phonenumber = models.CharField(max_length=255)
+    billing_address = models.CharField(max_length=255)
+    shipping_address = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    account_verify = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    status = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.user)
