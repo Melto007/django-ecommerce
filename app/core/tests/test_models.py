@@ -94,11 +94,13 @@ class ModelTests(TestCase):
             'shipping_address': 'some where',
             'location': 'what ever',
             'account_verify': True,
-            'created_at': '1990-20-30',
-            'updated_at': '2039-20-03',
+            'created_at': '1990-01-30',
+            'updated_at': '2039-01-03',
             'status': False
         }
-        models.Account.objects.create(user=user, **payload)
+
+        if not models.Account.objects.filter(user=user).exists():
+            models.Account.objects.create(user=user, **payload)
         account = models.Account.objects.filter(
             user=user
         ).first()
