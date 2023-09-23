@@ -142,7 +142,7 @@ class TwoFactorAuthMixinView(
             )
 
         secret = check_code.two_factor_auth
-        totp = pyotp.TOTP(secret, interval=60)
+        totp = pyotp.TOTP(secret, interval=120)
 
         if not totp.verify(code):
             raise exceptions.AuthenticationFailed(

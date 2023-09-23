@@ -106,3 +106,28 @@ class ModelTests(TestCase):
         ).first()
 
         self.assertEqual(account.user, user)
+
+    def test_product_create_success(self):
+        email = 'user@example.com'
+        password = 'examplepassword'
+
+        user = get_user_model().objects.create_superuser(
+            email=email,
+            password=password
+        )
+
+        payload = {
+            'name': 'test product',
+            'price': 250,
+            'about_item': 'test about',
+            'description': 'test description',
+            'product_details': 'test product',
+            'stock': 0,
+            'created_at': '1990-01-30',
+            'updated_at': '2039-01-03',
+            'status': False
+        }
+
+        res = models.Product.objects.create(user=user, **payload)
+
+        self.assertEqual(payload['name'], res.name)

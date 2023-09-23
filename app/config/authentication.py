@@ -20,7 +20,6 @@ class JWTAuthentication(BaseAuthentication):
             token = auth[1].decode('utf-8')
             user_id = decode_access_token(token)
             user = get_user_model().objects.get(pk=user_id)
-            self.user = user
             return {user, None}
         raise exceptions.AuthenticationFailed("Unauthorized")
 

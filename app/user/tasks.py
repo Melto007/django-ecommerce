@@ -7,7 +7,7 @@ import datetime
 
 @shared_task
 def mail_sharedTask(user_id, email):
-    totp = pyotp.TOTP(pyotp.random_base32(), interval=60)
+    totp = pyotp.TOTP(pyotp.random_base32(), interval=120)
     otp = totp.now()
     secret = totp.secret
     with mail.get_connection() as connection:

@@ -98,3 +98,22 @@ class Account(models.Model):
 
     def __str__(self):
         return str(self.user)
+
+
+class Product(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    name = models.CharField(max_length=255)
+    price = models.IntegerField()
+    about_item = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    product_details = models.CharField(max_length=255)
+    stock = models.IntegerField()
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.name)
