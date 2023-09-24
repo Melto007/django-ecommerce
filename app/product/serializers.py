@@ -2,8 +2,7 @@ from core.models import (
     Product
 )
 from rest_framework import (
-    serializers,
-    exceptions
+    serializers
 )
 
 
