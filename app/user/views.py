@@ -11,7 +11,7 @@ from .serializer import (
     RefreshTokenSerializer,
     UserTokenSerializer,
     TwoFactorAuthSerializer,
-    AccountSerializer
+    AccountSerializer,
 )
 from django.contrib.auth import get_user_model
 from config.authentication import (
@@ -245,6 +245,5 @@ class AccountMixinView(
     authentication_classes = [authentication.JWTAuthentication]
 
     def get_queryset(self):
-        user = self.request.session.get('id', None)
-        if user:
-            return self.queryset.filter(user=user)
+        user = self.request.user
+        return self.queryset.filter(user=user)

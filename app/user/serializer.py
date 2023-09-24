@@ -1,11 +1,15 @@
 """Serializer for user api"""
 
-from rest_framework import serializers
+from rest_framework import (
+    serializers,
+    exceptions
+)
 from django.contrib.auth import get_user_model
 from core.models import (
     UserToken,
     TwoFactorAuthentication,
-    Account
+    Account,
+    Product
 )
 
 
