@@ -14,6 +14,12 @@ from pathlib import Path
 import os
 import datetime
 
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'celery',
+    'cloudinary',
 
     'core',
     'user',
@@ -146,3 +153,10 @@ EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
 EMAIL_HOST_USER = 'd1bb3b3ea39a70'
 EMAIL_HOST_PASSWORD = 'e5cec0d1c2db45'
 EMAIL_PORT = '2525'
+
+cloudinary.config(
+  cloud_name = os.environ.get('CLOUD_NAME'),
+  api_key = os.environ.get('CLOUD_API_KEY'),
+  api_secret = os.environ.get('CLOUD_API_SECRET'),
+  secure = os.environ.get('CLOUD_SECURE')
+)

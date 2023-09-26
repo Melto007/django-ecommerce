@@ -23,6 +23,10 @@ services:
       - DB_PASSWORD=changeme
       - ACCESS_SECRET="some_secret_message"
       - REFRESH_TOKEN="some_access_message"
+      - CLOUD_NAME=dgcxsf4wb
+      - CLOUD_API_KEY=534187614489951
+      - CLOUD_API_SECRET=ZqZ3XS4FP1M43mDkleZvPxUGaqI
+      - CLOUD_SECURE=True
     depends_on:
       - db
       - redis

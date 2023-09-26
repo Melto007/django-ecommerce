@@ -6,14 +6,20 @@ from rest_framework import (
 )
 from rest_framework.response import Response
 from .serializers import (
-    ProductSerializer
+    ProductSerializer,
+    ProductImageSerializer
 )
 from config.authentication import (
     JWTAuthentication
 )
 from core.models import (
-    Product
+    Product,
+    ProductImage
 )
+from config.cloudinary import (
+    upload_image
+)
+import tempfile
 
 
 class ProductMixinView(
@@ -42,4 +48,41 @@ class ProductMixinView(
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProductImageMixinView(
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    serializer_class = ProductImageSerializer
+    queryset = ProductImage.objects.all()
+    authentication_class = [JWTAuthentication]
+
+    def put(self, request):
+        """update product image"""
+        file = request.FILES.get('image', None)
+        product = request.headers.get('product', None)
+
+        instance = self.queryset.get(product=product)
+
+        if not instance:
+            raise exceptions.APIException(
+                'Invalid Product'
+            )
+
+        secure_url = upload_image(file)
+
+        payload = {
+            'public_id': secure_url['public_id'],
+            'url': secure_url['secure_url']
+        }
+        serializer = self.get_serializer(
+            instance,
+            data=payload,
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
