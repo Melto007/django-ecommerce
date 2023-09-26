@@ -19,7 +19,6 @@ from core.models import (
 from config.cloudinary import (
     upload_image
 )
-import tempfile
 
 
 class ProductMixinView(

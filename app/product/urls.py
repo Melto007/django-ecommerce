@@ -8,7 +8,11 @@ router = routers.DefaultRouter()
 
 
 router.register('product', views.ProductMixinView, basename='product')
-router.register('product-image', views.ProductImageMixinView, basename='product-image')
+router.register(
+    'product-image',
+    views.ProductImageMixinView,
+    basename='product-image'
+)
 
 
 urlpatterns = [

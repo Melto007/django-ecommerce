@@ -153,6 +153,4 @@ class ModelTests(TestCase):
             'status': False
         }
 
-        res = models.Product.objects.create(user=user, **payload)
-
-
+        models.Product.objects.create(user=user, **payload)
