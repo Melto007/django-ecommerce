@@ -17,7 +17,8 @@ from core.models import (
     ProductImage
 )
 from config.cloudinary import (
-    upload_image
+    upload_image,
+    destroy_image
 )
 
 
@@ -64,6 +65,11 @@ class ProductImageMixinView(
         file = request.FILES.get('image', None)
         product = request.headers.get('product', None)
 
+        if file is None:
+            raise exceptions.APIException(
+                'File field is required'
+            )
+
         instance = self.queryset.get(product=product)
 
         if not instance:
@@ -71,17 +77,22 @@ class ProductImageMixinView(
                 'Invalid Product'
             )
 
+        if instance.public_id:
+            destroy_image(instance.public_id)
+
         secure_url = upload_image(file)
 
         payload = {
             'public_id': secure_url['public_id'],
             'url': secure_url['secure_url']
         }
+
         serializer = self.get_serializer(
             instance,
             data=payload,
             partial=True
         )
+
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
