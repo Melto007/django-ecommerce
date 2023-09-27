@@ -3,6 +3,7 @@
 import cloudinary
 import datetime
 
+
 def upload_image(file):
     url = cloudinary.uploader.upload(
         file,
@@ -11,6 +12,7 @@ def upload_image(file):
         unique_filename=True
     )
     return url
+
 
 def destroy_image(public_key):
     url = cloudinary.uploader.destroy(public_key)
