@@ -3,7 +3,6 @@
 import cloudinary
 import datetime
 
-
 def upload_image(file):
     url = cloudinary.uploader.upload(
         file,
