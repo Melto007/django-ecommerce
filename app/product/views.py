@@ -25,12 +25,14 @@ from config.cloudinary import (
 class ProductMixinView(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet
 ):
     """product mixins"""
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     authentication_classes = [JWTAuthentication]
+    lookup_field = 'pk'
 
     def perform_create(self, request):
         user = self.request.user
@@ -49,6 +51,21 @@ class ProductMixinView(
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, pk, **kwargs):
+        res = self.queryset.get(id=pk)
+
+        if not res:
+            raise exceptions.APIException(
+                'Product does not exists'
+            )
+
+        res.delete()
+
+        message = {
+            'message': 'Item deleted'
+        }
+        return Response(message)
 
 
 class ProductImageMixinView(
