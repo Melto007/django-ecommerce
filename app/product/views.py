@@ -65,6 +65,7 @@ class ProductMixinView(
         message = {
             'message': 'Item deleted'
         }
+
         return Response(message)
 
 
@@ -76,6 +77,11 @@ class ProductImageMixinView(
     serializer_class = ProductImageSerializer
     queryset = ProductImage.objects.all()
     authentication_class = [JWTAuthentication]
+
+    def list(self, request):
+        res = self.queryset.all()
+        serializer = self.get_serializer(res, many=True)
+        return Response(serializer.data)
 
     def put(self, request):
         """update product image"""

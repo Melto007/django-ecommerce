@@ -7,17 +7,6 @@ from rest_framework import (
 )
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    """product serializer"""
-    class Meta:
-        model = Product
-        fields = [
-            'id', 'name', 'price', 'about_item',
-            'description', 'product_details', 'stock',
-            'status'
-        ]
-
-
 class ProductImageSerializer(serializers.ModelSerializer):
     """Product Image Upload Serializer"""
 
@@ -29,3 +18,16 @@ class ProductImageSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'public_id': {'write_only': True},
         }
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    """product serializer"""
+    product = ProductImageSerializer(many=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'name', 'price', 'about_item',
+            'description', 'product_details', 'stock',
+            'status', 'product'
+        ]

@@ -118,6 +118,10 @@ class Product(models.Model):
     def __str__(self):
         return str(self.name)
 
+    @property
+    def product(self):
+        return self.productimage_set.all()
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(
