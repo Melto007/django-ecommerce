@@ -22,7 +22,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     """product serializer"""
-    product = ProductImageSerializer(many=True)
+    product = ProductImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
