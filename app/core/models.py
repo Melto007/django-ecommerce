@@ -186,8 +186,8 @@ class DeliveryOptions(models.Model):
     )
 
     class Meta:
-        verbose_name=_("Delivery Option")
-        verbose_name_plural=_("Delivery Options")
+        verbose_name = _("Delivery Option")
+        verbose_name_plural = _("Delivery Options")
 
     def __str__(self):
         return self.delivery_name
@@ -204,8 +204,8 @@ class PaymentSelection(models.Model):
     )
 
     class Meta:
-        verbose_name=_("Payment Selection")
-        verbose_name_plural=_("Payment Selections")
+        verbose_name = _("Payment Selection")
+        verbose_name_plural = _("Payment Selections")
 
     def __str__(self):
         return self.name
