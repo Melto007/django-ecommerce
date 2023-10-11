@@ -1,7 +1,6 @@
 from rest_framework import (
     viewsets,
     mixins,
-    exceptions,
     status
 )
 
@@ -27,4 +26,4 @@ class BasketView(
         product = get_object_or_404(Product, id=product_id)
         basket.add(product=product)
         serializer = self.get_serializer(product, many=False)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
